@@ -24,7 +24,7 @@ class Storage(metaclass=Singleton):
         with open(file, 'a+') as storage_file:
             storage_file.seek(0)
             contents = storage_file.read()
-            entries = [] if len(contents) == 0 else json.loads(storage_file)
+            entries = [] if len(contents) == 0 else json.loads(contents)
 
             for entry in entries:
                 self.entries.append(from_dict(Entry, entry))
