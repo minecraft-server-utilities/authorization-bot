@@ -53,9 +53,9 @@ async def handle_registration_message(author: User | Member, content: str) -> bo
     if len(pending_with_id) == 0:
         return False
 
-    salt = bcrypt.gensalt()
-    password_bytes = str.encode(content)
-    salted_password_bytes = password_bytes.join([salt])
+    salt = bcrypt.gensalt().hex()
+    salted_password_bytes = str.encode(content + salt)
+    print(f"salt: {salt}\npassword and salt: {content + salt}\npassword and salt bytes: {salted_password_bytes}")
 
     sha256 = hashlib.sha256()
     sha256.update(salted_password_bytes)
@@ -63,7 +63,7 @@ async def handle_registration_message(author: User | Member, content: str) -> bo
 
     pending = pending_with_id[0]
     pending.passwordHash = password_hash
-    pending.salt = str(salt.hex())
+    pending.salt = salt
     _pending_entries.remove(pending)
 
     Storage().entries.append(pending)
