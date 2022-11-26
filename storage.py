@@ -10,7 +10,8 @@ from utils import Singleton
 class Entry:
     username: str
     discord_id: str
-    password: str = ""
+    passwordHash: str = ""
+    salt: str = ""
 
 
 class Storage(metaclass=Singleton):

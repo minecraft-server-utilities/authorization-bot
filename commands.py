@@ -1,5 +1,7 @@
+import bcrypt
 from discord import User, Member, Interaction
 from discord.app_commands import command, Command
+import hashlib
 from typing import Callable, Coroutine, Any
 
 from storage import Storage, Entry
@@ -51,8 +53,17 @@ async def handle_registration_message(author: User | Member, content: str) -> bo
     if len(pending_with_id) == 0:
         return False
 
+    salt = bcrypt.gensalt()
+    password_bytes = str.encode(content)
+    salted_password_bytes = password_bytes.join([salt])
+
+    sha256 = hashlib.sha256()
+    sha256.update(salted_password_bytes)
+    password_hash = sha256.hexdigest()
+
     pending = pending_with_id[0]
-    pending.password = content
+    pending.passwordHash = password_hash
+    pending.salt = str(salt.hex())
     _pending_entries.remove(pending)
 
     Storage().entries.append(pending)
